@@ -1,0 +1,4 @@
+SELECT DISTRICT_NAME 都道府県名, TOTAL_AMT 総人口
+from POPULATION
+where LVL = 2
+order by TOTAL_AMT DESC
