@@ -1,0 +1,30 @@
+SELECT
+    D.PF_CODE AS CODE,
+    P.PF_NAME AS NAME,
+    ROUND((CAST(SUM(
+        CASE D.CATEGORY_CODE
+            WHEN '120' THEN D.AMT
+            ELSE 0
+        END
+    ) AS REAL) /
+    CAST(SUM(
+        CASE D.CATEGORY_CODE
+            WHEN '110' THEN D.AMT
+            ELSE 0
+        END
+    ) AS REAL)) * 100, 1) AS PERCENTAGE
+FROM
+    DRINK_HABITS D
+LEFT OUTER JOIN
+    PREFECTURE P
+ON
+    D.PF_CODE = P.PF_CODE
+WHERE
+    D.GENDER_CODE IN (2,3)
+GROUP BY
+    D.PF_CODE,
+    P.PF_NAME
+ORDER BY
+    PERCENTAGE DESC,
+    CODE DESC
+;
