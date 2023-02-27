@@ -1,0 +1,24 @@
+SELECT
+    E1.EMP_CODE AS CODE,
+    E1.EMP_LAST_NAME AS SURNAME,
+    E1.EMP_FIRST_NAME AS NAME
+FROM
+    EMP E1
+WHERE 
+    VALID_FLG = '1'
+    AND
+    EXISTS (
+        SELECT *
+        FROM EMP E2
+        WHERE E1.EMP_CODE <> E2.EMP_CODE
+        AND
+        REPLACE(E1.EMP_LAST_NAME, ' ', '') = REPLACE(E2.EMP_LAST_NAME, ' ', '')
+        AND
+        REPLACE(E1.EMP_FIRST_NAME, ' ', '') = REPLACE(E2.EMP_FIRST_NAME, ' ', '')
+        AND
+        E2.VALID_FLG = '1'
+    )
+ORDER BY
+    REPLACE(E1.EMP_LAST_NAME || E1.EMP_FIRST_NAME, ' ', '') ASC,
+    E1.EMP_CODE ASC
+;

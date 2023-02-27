@@ -1,0 +1,48 @@
+--平均
+WITH TEST_AVG AS (
+    SELECT
+        AVG(POINT) AS P_AVG
+    FROM
+        TEST_RESULTS
+    WHERE
+        TEST_ID = '100'
+),
+--分散
+TEST_DISP AS (
+    SELECT
+        AVG(T.ITEM_3) DISPERSION
+    FROM (
+        SELECT
+            P_AVG AS ITEM_1,
+            T.POINT - P_AVG AS ITEM_2,
+            POWER(T.POINT - P_AVG, 2) AS ITEM_3
+        FROM TEST_RESULTS T
+        CROSS JOIN TEST_AVG A
+        WHERE TEST_ID = '100'
+    ) T
+),
+--標準偏差
+TEST_SD AS (
+    SELECT
+        SQRT(DISPERSION) AS SD
+    FROM TEST_DISP
+)
+SELECT
+    USER_ID AS USER,
+    POINT AS PT,
+    CASE SD
+        WHEN 0 THEN 50
+        ELSE ROUND(((POINT - P_AVG) * 10 / SD) + 50, 1)
+    END AS DEV_VAL
+FROM
+    TEST_RESULTS
+CROSS JOIN
+    TEST_AVG
+CROSS JOIN
+    TEST_SD
+WHERE
+    TEST_ID = '100'
+ORDER BY
+    DEV_VAL DESC,
+    USER ASC
+;
